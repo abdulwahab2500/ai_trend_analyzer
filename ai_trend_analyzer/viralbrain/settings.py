@@ -29,9 +29,9 @@ if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
 
 # CSRF_TRUSTED_ORIGINS: Allow HTTPS Vercel URLs for CSRF protection
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app")
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app,localhost:3000,127.0.0.1:8000")
 if not CSRF_TRUSTED_ORIGINS:
-    CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
+    CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:8000']
 
 # ---------------------- Installed Apps ----------------------
 INSTALLED_APPS = [

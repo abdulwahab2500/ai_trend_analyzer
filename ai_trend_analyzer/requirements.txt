@@ -1,0 +1,8 @@
+Django==5.2.8
+django-allauth==0.61.1
+python-dotenv==1.0.0
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.104.0
+whitenoise==6.6.0
+gunicorn==21.2.0

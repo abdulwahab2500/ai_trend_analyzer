@@ -12,10 +12,19 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
+
+def env_list(var_name: str, default: str = ""):
+    """Return a sanitized list from a comma-separated environment variable."""
+    raw = os.getenv(var_name)
+    if not raw:
+        raw = default
+    return [entry.strip() for entry in raw.split(",") if entry and entry.strip()]
+
 # Quick-start development settings
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ".vercel.app,localhost,127.0.0.1")
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app")
 
 # ---------------------- Installed Apps ----------------------
 INSTALLED_APPS = [
@@ -98,8 +107,13 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------------------- Static Files ----------------------
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# Enable whitenoise for serving static files on Vercel/production
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

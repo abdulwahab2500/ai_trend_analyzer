@@ -41,13 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # required by allauth
+    # 'django.contrib.sites',  # required by allauth - TEMPORARILY DISABLED
 
     # Third-party
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # 'allauth',  # TEMPORARILY DISABLED FOR DEPLOYMENT
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
     'rest_framework',
 
     # Your apps
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # Required by django-allauth
+    # 'allauth.account.middleware.AccountMiddleware',  # TEMPORARILY DISABLED
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -134,28 +134,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ---------------------- Environment API Keys ----------------------
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
-# ---------------------- Allauth ----------------------
-SITE_ID = int(os.getenv('DJANGO_SITE_ID', 1))
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',           # default
-    'allauth.account.auth_backends.AuthenticationBackend', # allauth
-)
+# ---------------------- Allauth - TEMPORARILY DISABLED ----------------------
+# SITE_ID = int(os.getenv('DJANGO_SITE_ID', 1))
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',           # default
+#     'allauth.account.auth_backends.AuthenticationBackend', # allauth
+# )
 
-LOGIN_REDIRECT_URL = '/dashboard/'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+# LOGIN_REDIRECT_URL = '/dashboard/'
+# ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
-ACCOUNT_EMAIL_REQUIRED = False
+# ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_AUTHENTICATION_METHOD = 'username'
+# ACCOUNT_EMAIL_REQUIRED = False
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'APP': {
-            'client_id': os.getenv("GOOGLE_CLIENT_ID", ""),
-            'secret': os.getenv("GOOGLE_CLIENT_SECRET", ""),
-            'key': ''
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {'access_type': 'online'},
+#         'APP': {
+#             'client_id': os.getenv("GOOGLE_CLIENT_ID", ""),
+#             'secret': os.getenv("GOOGLE_CLIENT_SECRET", ""),
+#             'key': ''
+#         }
+#     }
+# }

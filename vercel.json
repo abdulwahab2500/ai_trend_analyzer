@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "ai_trend_analyzer/viralbrain/wsgi.py",
+      "use": "@vercel/python@3.8.13",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.x"
+      }
+    },
+    {
+      "src": "ai_trend_analyzer/static/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, s-maxage=3600"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "ai_trend_analyzer/viralbrain/wsgi.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "viralbrain.settings",
+    "PYTHONPATH": "/var/task/ai_trend_analyzer"
+  }
+}

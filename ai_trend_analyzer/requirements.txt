@@ -1,7 +1,27 @@
+# Core Django Framework
 Django==5.2.8
+
+# Static file serving for production (required for Vercel)
 whitenoise==6.8.1
+
+# WSGI HTTP Server (optional, but good for production)
 gunicorn==23.0.0
-django-allauth==65.13.1
-djangorestframework==3.16.1
+
+# Environment variable management
 python-dotenv==1.1.1
+
+# Django Authentication (Google OAuth)
+django-allauth==65.13.1
+
+# JWT for OAuth token handling
+PyJWT==2.8.1
+
+# REST API Framework
+djangorestframework==3.16.1
+
+# Image processing (if needed for user uploads)
+Pillow==10.1.0
+
+# HTTP library for API requests (YouTube API)
+requests==2.31.0
 PyJWT==2.8.1

@@ -21,8 +21,17 @@ def env_list(var_name: str, default: str = ""):
 # ---------------------- Security ----------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# ALLOWED_HOSTS: Allow Vercel subdomains, custom domains, and local development
 ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", ".vercel.app,localhost,127.0.0.1")
+# For production, you can also add your custom domain: "yourdomain.com"
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
+
+# CSRF_TRUSTED_ORIGINS: Allow HTTPS Vercel URLs for CSRF protection
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app")
+if not CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
 
 # ---------------------- Installed Apps ----------------------
 INSTALLED_APPS = [
@@ -102,9 +111,21 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------------------- Static Files (WhiteNoise + Vercel) ----------------------
+# Static files will be served from the /static/ URL path
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # where collectstatic puts files for deployment
-STATICFILES_DIRS = [BASE_DIR / 'static']  # optional local static folder
+
+# STATIC_ROOT: Directory where collectstatic gathers all static files for deployment
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# STATICFILES_DIRS: Additional locations for static files (if you have a local static folder)
+# Only include if the 'static' directory exists and is not empty
+if (BASE_DIR / 'static').exists():
+    STATICFILES_DIRS = [BASE_DIR / 'static']
+else:
+    STATICFILES_DIRS = []
+
+# WhiteNoise: Efficiently serves static files with compression and caching
+# Use CompressedManifestStaticFilesStorage for production (with compression)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ---------------------- Default PK ----------------------

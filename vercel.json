@@ -3,24 +3,24 @@
   "builds": [
     {
       "src": "ai_trend_analyzer/viralbrain/wsgi.py",
-      "use": "@vercel/python@3.8.13",
+      "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "50mb",
-        "runtime": "python3.x"
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
       }
     },
     {
-      "src": "ai_trend_analyzer/static/**/*",
-      "use": "@vercel/static"
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "ai_trend_analyzer/staticfiles"
+      }
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/static/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=3600, s-maxage=3600"
-      }
+      "dest": "/static/$1"
     },
     {
       "src": "/(.*)",
@@ -28,6 +28,14 @@
     }
   ],
   "env": {
+    "SECRET_KEY": "",
+    "DEBUG": "False",
+    "ALLOWED_HOSTS": ".vercel.app,localhost,127.0.0.1",
+    "CSRF_TRUSTED_ORIGINS": "https://*.vercel.app",
+    "YOUTUBE_API_KEY": "",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": "",
+    "DJANGO_SITE_ID": "1",
     "DJANGO_SETTINGS_MODULE": "viralbrain.settings",
     "PYTHONPATH": "/var/task/ai_trend_analyzer"
   }

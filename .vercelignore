@@ -1,0 +1,49 @@
+# Vercel Ignore File
+# Files and directories listed here will not be uploaded to Vercel
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Database files (SQLite - use external DB for production)
+*.sqlite3
+db.sqlite3
+
+# Environment variables (should be set in Vercel dashboard)
+.env
+.env.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Testing and coverage
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Documentation
+*.md
+!README.md
+
+# Local static files (collectstatic will handle these)
+ai_trend_analyzer/static/

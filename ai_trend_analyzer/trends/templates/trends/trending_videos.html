@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Trend Analyzer</title>
+    <!-- Tailwind CSS CDN (dev-friendly). Remove if you compile Tailwind locally. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html,body{font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;}
+        /* Fallback minimal styles if Tailwind is blocked */
+        .tw-hidden{display:none}
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur sticky top-0 z-10 border-b border-slate-200 dark:border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+            <h1 class="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">🎬 YouTube Trending Videos</h1>
+            <div class="flex items-center gap-3">
+                <a href="{% url 'trends:compare' %}" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition">⚖️ Compare</a>
+                <button id="themeToggle" type="button" class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 shadow-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition">☀️ Day</button>
+                <a href="{% url 'trends:login' %}" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-sky-600 hover:bg-sky-700 text-white shadow-sm transition">Login</a>
+                <a href="/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">Refresh</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- Filters / Controls -->
+        <form method="get" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Country</label>
+                    <select name="country" class="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-inner">
+                        {% for code, name in countries.items %}
+                            <option value="{{ code }}" {% if code == selected_country %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Category</label>
+                    <select name="category" class="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-inner">
+                        <option value="">All</option>
+                        {% for id, name in categories.items %}
+                            <option value="{{ id }}" {% if id == selected_category %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">Engagement</label>
+                    <select name="engagement" class="w-full rounded-xl border-2 border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-inner">
+                        <option value="">All</option>
+                        <option value="high" {% if selected_engagement == 'high' %}selected{% endif %}>High (&gt;5%)</option>
+                        <option value="medium" {% if selected_engagement == 'medium' %}selected{% endif %}>Medium (2–5%)</option>
+                        <option value="low" {% if selected_engagement == 'low' %}selected{% endif %}>Low (&lt;2%)</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white font-medium shadow hover:bg-indigo-700 dark:hover:bg-indigo-600 transition w-full">Show</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- AI Summary -->
+        {% if summary %}
+        <section class="bg-gradient-to-br from-indigo-50 to-sky-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl ring-1 ring-slate-200 dark:ring-slate-600 p-5 sm:p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2">🧠 AI Summary of Trending Videos</h2>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">{{ summary }}</p>
+        </section>
+        {% endif %}
+
+        <!-- Videos grid -->
+        <section>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {% for v in videos %}
+                    <article class="group bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition">
+                        <a href="{{ v.link }}" target="_blank" class="block">
+                            <div class="relative">
+                                <img src="{{ v.thumbnail }}" alt="{{ v.title }}" class="w-full aspect-video object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                            </div>
+                        </a>
+                        <div class="p-4 space-y-3">
+                            <h3 class="font-semibold text-slate-900 dark:text-slate-100 line-clamp-2">{{ v.title }}</h3>
+                            <div class="text-sm text-slate-600 dark:text-slate-400 flex items-center justify-between">
+                                <span>Channel: <span class="font-medium text-slate-800 dark:text-slate-200">{{ v.channel }}</span></span>
+                                <span>Views: <span class="font-medium text-slate-800 dark:text-slate-200">{{ v.views }}</span></span>
+                            </div>
+
+                            <!-- Badges -->
+                            <div class="flex flex-wrap gap-2 pt-1">
+                                <!-- Engagement Badge -->
+                                {% if v.engagement_score is not None %}
+                                    {% if v.engagement_score > 5 %}
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">{{ v.engagement_text }}</span>
+                                    {% elif v.engagement_score >= 2 %}
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 ring-1 ring-amber-200">{{ v.engagement_text }}</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 ring-1 ring-rose-200">{{ v.engagement_text }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 ring-1 ring-slate-200">Engagement N/A</span>
+                                {% endif %}
+
+                                <!-- Sentiment Badge -->
+                                {% if v.sentiment and v.sentiment.label == "Positive" %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">Positive</span>
+                                {% elif v.sentiment and v.sentiment.label == "Negative" %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 ring-1 ring-rose-200">Negative</span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 ring-1 ring-slate-200">Neutral</span>
+                                {% endif %}
+                            </div>
+
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Score: {{ v.sentiment.score|default:"N/A" }}</p>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="text-slate-600">No videos found.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Keywords & Hashtags -->
+        <section class="grid gap-6 lg:grid-cols-2">
+            <!-- Keywords -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 p-5">
+                <h3 class="text-lg font-semibold mb-3 text-slate-800 dark:text-slate-100">🧠 Top Keywords</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for kw in keywords|slice:":24" %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 hover:bg-indigo-100 transition">
+                            {% if kw.0 %}{{ kw.0 }}{% else %}{{ kw }}{% endif %}
+                        </span>
+                    {% empty %}
+                        <span class="text-slate-500 dark:text-slate-400">No keywords found.</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Hashtags -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 p-5">
+                <h3 class="text-lg font-semibold mb-3 text-slate-800 dark:text-slate-100">🔥 Top Hashtags</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in hashtags|slice:":24" %}
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm bg-rose-50 text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100 transition">{{ tag }}</span>
+                    {% empty %}
+                        <span class="text-slate-500 dark:text-slate-400">No hashtags found.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>AI Trend Analyzer • {{ selected_country|default:"US" }}</p>
+    </footer>
+
+    <script>
+        // Theme toggle with localStorage persistence
+        const toggleBtn = document.getElementById('themeToggle');
+        function applyInitialTheme(){
+            try {
+                const saved = localStorage.getItem('theme');
+                if(saved === 'dark'){
+                    document.documentElement.classList.add('dark');
+                    toggleBtn.textContent = '🌙 Night';
+                } else {
+                    toggleBtn.textContent = '☀️ Day';
+                }
+            } catch(e) { /* ignore storage errors */ }
+        }
+        applyInitialTheme();
+        toggleBtn?.addEventListener('click', () => {
+            const root = document.documentElement;
+            const isDark = root.classList.toggle('dark');
+            toggleBtn.textContent = isDark ? '🌙 Night' : '☀️ Day';
+            try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch(e) {}
+        });
+    </script>
+
+</body>
+</html>

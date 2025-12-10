@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dashboard — AI Trend Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen">
+    <nav class="max-w-6xl mx-auto p-6 flex items-center justify-between">
+      <div class="text-lg font-semibold">AI Trend Analyzer</div>
+      <div class="flex items-center gap-3">
+        {% if is_authenticated %}
+          <span class="text-sm text-slate-600 dark:text-slate-300">Signed in as <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+          <a href="{% url 'account_logout' %}" class="px-3 py-2 rounded-md bg-rose-500 text-white hover:bg-rose-600">Log out</a>
+        {% else %}
+          <a href="{% url 'trends:login' %}" class="px-3 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700">Sign in</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section class="col-span-2 bg-white dark:bg-slate-800 rounded-lg p-6 shadow">
+          {% if is_authenticated %}
+            <h2 class="text-xl font-semibold mb-2">Welcome back, {{ user.get_full_name|default:user.username }} 👋</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-300 mb-4">Here's a quick view of your personalized dashboard. You can continue to explore trending videos or manage your preferences.</p>
+
+            <div class="flex gap-3">
+              <a href="{% url 'trends:home' %}" class="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 shadow">View trending videos</a>
+              <a href="{% url 'trends:home' %}?favorites=1" class="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Your favorites (placeholder)</a>
+            </div>
+
+          {% else %}
+            <h2 class="text-xl font-semibold mb-2">Hello — welcome to AI Trend Analyzer</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-300 mb-4">You are not signed in. You can browse trends as a guest or sign in with Google for a personalized experience.</p>
+
+            <div class="flex gap-3">
+              <a href="{% url 'trends:login' %}" class="px-4 py-2 rounded-md bg-sky-600 text-white hover:bg-sky-700 shadow">Sign in with Google</a>
+              <a href="{% url 'trends:home' %}" class="px-4 py-2 rounded-md bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600">Continue as guest</a>
+            </div>
+          {% endif %}
+        </section>
+
+        <aside class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow">
+          <h3 class="text-sm font-semibold mb-3">Quick tips</h3>
+          <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-2">
+            <li>Use the trends page to see top videos per country & category.</li>
+            <li>Sign in to save preferences and access personalized insights.</li>
+            <li>The Google button uses django-allauth; make sure it's configured in settings.</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto p-6 text-center text-xs text-slate-400">
+      © {{ now.year }} AI Trend Analyzer — Built with Django & Tailwind
+    </footer>
+  </body>
+</html>

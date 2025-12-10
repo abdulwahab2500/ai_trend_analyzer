@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Trend Analyzer</title>
+    <style>
+        body { font-family: Arial; background: #f8f9fa; margin: 40px; }
+        h1 { color: #222; }
+        select, button { padding: 8px 12px; margin: 5px; }
+        .video-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .keyword-box { background: #007bff; color: white; padding: 5px 10px; border-radius: 8px; margin: 4px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<h1>🌍 AI Trend Analyzer</h1>
+
+<form method="get">
+    <label for="country">Select Country:</label>
+    <select name="country" id="country">
+        {% for code, name in countries.items %}
+            <option value="{{ code }}" {% if selected_country == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="category">Category:</label>
+    <select name="category" id="category">
+        <option value="">All</option>
+        {% for id, name in categories.items %}
+            <option value="{{ id }}" {% if selected_category == id %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Show Trends</button>
+</form>
+
+<hr>
+
+<h2>Top Trending Videos ({{ countries[selected_country] }})</h2>
+
+{% if videos %}
+    {% for video in videos %}
+        <div class="video-card">
+            <strong>{{ video.title }}</strong><br>
+            🎥 {{ video.channel }}<br>
+            👁️ {{ video.views }} views<br>
+            🔗 <a href="{{ video.link }}" target="_blank">Watch</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No videos found.</p>
+{% endif %}
+
+<hr>
+
+<h2>🔥 Top Keywords in Trending Titles</h2>
+{% for word, count in keywords %}
+    <span class="keyword-box">{{ word }} ({{ count }})</span>
+{% endfor %}
+
+</body>
+</html>

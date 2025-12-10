@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Countries - ViralBrain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    <i class="fas fa-brain mr-2"></i>ViralBrain
+                </a>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                        <i class="fas fa-home mr-1"></i>Home
+                    </a>
+                    <a href="/compare/" class="text-blue-600 dark:text-blue-400 font-semibold">
+                        <i class="fas fa-balance-scale mr-1"></i>Compare
+                    </a>
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-balance-scale text-blue-600"></i> Compare Countries
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                Side-by-side comparison of trending videos from different countries
+            </p>
+        </div>
+
+        <!-- Country Selection Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+            <form method="GET" action="/compare/" class="flex flex-wrap gap-4 items-end justify-center">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Country 1
+                    </label>
+                    <select name="country1" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        {% for code, name in countries.items %}
+                        <option value="{{ code }}" {% if code == country1_code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="text-2xl text-gray-400">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Country 2
+                    </label>
+                    <select name="country2" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        {% for code, name in countries.items %}
+                        <option value="{{ code }}" {% if code == country2_code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Compare
+                </button>
+            </form>
+        </div>
+
+        <!-- Comparison Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Country 1 Summary -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-flag mr-3"></i>{{ country1_name }}
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-3">
+                        <span class="font-medium">Avg Engagement</span>
+                        <span class="text-2xl font-bold">{{ data1.avg_engagement }}%</span>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <div class="font-medium mb-2">Sentiment Distribution</div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-smile text-green-300"></i> Positive</span>
+                                <span class="font-bold">{{ data1.sentiment_counts.positive }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-meh text-yellow-300"></i> Neutral</span>
+                                <span class="font-bold">{{ data1.sentiment_counts.neutral }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-frown text-red-300"></i> Negative</span>
+                                <span class="font-bold">{{ data1.sentiment_counts.negative }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Country 2 Summary -->
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-flag mr-3"></i>{{ country2_name }}
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-3">
+                        <span class="font-medium">Avg Engagement</span>
+                        <span class="text-2xl font-bold">{{ data2.avg_engagement }}%</span>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <div class="font-medium mb-2">Sentiment Distribution</div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-smile text-green-300"></i> Positive</span>
+                                <span class="font-bold">{{ data2.sentiment_counts.positive }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-meh text-yellow-300"></i> Neutral</span>
+                                <span class="font-bold">{{ data2.sentiment_counts.neutral }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span><i class="fas fa-frown text-red-300"></i> Negative</span>
+                                <span class="font-bold">{{ data2.sentiment_counts.negative }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keywords Comparison -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Country 1 Keywords -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <i class="fas fa-key text-blue-600 mr-2"></i>Top Keywords - {{ country1_name }}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% if data1.keywords %}
+                        {% for keyword, count in data1.keywords %}
+                        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+                            {{ keyword }} ({{ count }})
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">No keywords found</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Country 2 Keywords -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <i class="fas fa-key text-purple-600 mr-2"></i>Top Keywords - {{ country2_name }}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% if data2.keywords %}
+                        {% for keyword, count in data2.keywords %}
+                        <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm font-medium">
+                            {{ keyword }} ({{ count }})
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">No keywords found</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Hashtags Comparison -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Country 1 Hashtags -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <i class="fas fa-hashtag text-blue-600 mr-2"></i>Trending Hashtags - {{ country1_name }}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% if data1.hashtags %}
+                        {% for hashtag, count in data1.hashtags %}
+                        <span class="px-3 py-1 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 rounded-lg text-sm border border-blue-200 dark:border-blue-800">
+                            #{{ hashtag }} ({{ count }})
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">No hashtags found</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Country 2 Hashtags -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <i class="fas fa-hashtag text-purple-600 mr-2"></i>Trending Hashtags - {{ country2_name }}
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    {% if data2.hashtags %}
+                        {% for hashtag, count in data2.hashtags %}
+                        <span class="px-3 py-1 bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-lg text-sm border border-purple-200 dark:border-purple-800">
+                            #{{ hashtag }} ({{ count }})
+                        </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">No hashtags found</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos Comparison -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+                <i class="fas fa-video text-red-600 mr-2"></i>Top Trending Videos
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Country 1 Videos -->
+            <div>
+                <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-4 flex items-center">
+                    <i class="fas fa-flag mr-2"></i>{{ country1_name }} Videos
+                </h3>
+                <div class="space-y-4">
+                    {% if data1.videos %}
+                        {% for video in data1.videos %}
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <a href="https://www.youtube.com/watch?v={{ video.videoId }}" target="_blank" class="block">
+                            <div class="relative">
+                                <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-48 object-cover">
+                                <div class="absolute top-2 right-2 flex gap-2">
+                                    {% if video.sentiment.label == 'positive' %}
+                                    <span class="px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-smile"></i> Positive
+                                    </span>
+                                    {% elif video.sentiment.label == 'negative' %}
+                                    <span class="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-frown"></i> Negative
+                                    </span>
+                                    {% else %}
+                                    <span class="px-2 py-1 bg-gray-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-meh"></i> Neutral
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold text-gray-800 dark:text-white mb-2 line-clamp-2">
+                                    {{ video.title }}
+                                </h4>
+                                <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                                    <span><i class="fas fa-eye"></i> {{ video.views|floatformat:0 }}</span>
+                                    <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                                        {{ video.engagement_score }}% engagement
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+                            <p class="text-gray-500 dark:text-gray-400">No videos found for {{ country1_name }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Country 2 Videos -->
+            <div>
+                <h3 class="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4 flex items-center">
+                    <i class="fas fa-flag mr-2"></i>{{ country2_name }} Videos
+                </h3>
+                <div class="space-y-4">
+                    {% if data2.videos %}
+                        {% for video in data2.videos %}
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <a href="https://www.youtube.com/watch?v={{ video.videoId }}" target="_blank" class="block">
+                            <div class="relative">
+                                <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-48 object-cover">
+                                <div class="absolute top-2 right-2 flex gap-2">
+                                    {% if video.sentiment.label == 'positive' %}
+                                    <span class="px-2 py-1 bg-green-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-smile"></i> Positive
+                                    </span>
+                                    {% elif video.sentiment.label == 'negative' %}
+                                    <span class="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-frown"></i> Negative
+                                    </span>
+                                    {% else %}
+                                    <span class="px-2 py-1 bg-gray-500 text-white text-xs rounded-full">
+                                        <i class="fas fa-meh"></i> Neutral
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold text-gray-800 dark:text-white mb-2 line-clamp-2">
+                                    {{ video.title }}
+                                </h4>
+                                <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                                    <span><i class="fas fa-eye"></i> {{ video.views|floatformat:0 }}</span>
+                                    <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">
+                                        {{ video.engagement_score }}% engagement
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+                            <p class="text-gray-500 dark:text-gray-400">No videos found for {{ country2_name }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
+            <p>&copy; 2025 ViralBrain. AI-powered YouTube trend analysis.</p>
+        </div>
+    </footer>
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to 'light' mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            html.classList.add('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const theme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,34 +1,25 @@
 {
-  "version": 2,
+  "version": 3,
   "builds": [
     {
-      "src": "ai_trend_analyzer/viralbrain/wsgi.py",
-      "use": "@vercel/python@3.8.13",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "runtime": "python3.x"
-      }
-    },
-    {
-      "src": "ai_trend_analyzer/static/**/*",
-      "use": "@vercel/static"
+      "src": "ai_trend_analyzer/manage.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "50mb" }
     }
   ],
   "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=3600, s-maxage=3600"
-      }
-    },
     {
       "src": "/(.*)",
       "dest": "ai_trend_analyzer/viralbrain/wsgi.py"
     }
   ],
   "env": {
-    "DJANGO_SETTINGS_MODULE": "viralbrain.settings",
-    "PYTHONPATH": "/var/task/ai_trend_analyzer"
+    "SECRET_KEY": "@SECRET_KEY",
+    "DEBUG": "False",
+    "ALLOWED_HOSTS": ".vercel.app,localhost,127.0.0.1",
+    "YOUTUBE_API_KEY": "@YOUTUBE_API_KEY",
+    "GOOGLE_CLIENT_ID": "@GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET": "@GOOGLE_CLIENT_SECRET",
+    "DJANGO_SITE_ID": "1"
   }
 }

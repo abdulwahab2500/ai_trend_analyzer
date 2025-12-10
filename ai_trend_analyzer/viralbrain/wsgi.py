@@ -8,10 +8,18 @@ https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/
 """
 
 import os
-from django.core.wsgi import get_wsgi_application
+import sys
+from pathlib import Path
+
+# Add the project directory to the sys.path
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(BASE_DIR))
 
 # Set the Django settings module to the correct settings file
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'viralbrain.settings')
+
+# Import Django WSGI application
+from django.core.wsgi import get_wsgi_application
 
 # Create the Django WSGI application
 application = get_wsgi_application()

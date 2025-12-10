@@ -1,0 +1,28 @@
+{
+  "version": 3,
+  "buildCommand": "cd ai_trend_analyzer && python manage.py collectstatic --noinput",
+  "outputDirectory": "ai_trend_analyzer/staticfiles",
+  "builds": [
+    {
+      "src": "ai_trend_analyzer/viralbrain/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "50mb" }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "ai_trend_analyzer/viralbrain/wsgi.py"
+    }
+  ],
+  "env": {
+    "SECRET_KEY": "@SECRET_KEY",
+    "DEBUG": "False",
+    "ALLOWED_HOSTS": ".vercel.app,localhost,127.0.0.1",
+    "CSRF_TRUSTED_ORIGINS": "https://*.vercel.app,http://localhost:3000,http://127.0.0.1:8000",
+    "YOUTUBE_API_KEY": "@YOUTUBE_API_KEY",
+    "GOOGLE_CLIENT_ID": "@GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET": "@GOOGLE_CLIENT_SECRET",
+    "DJANGO_SITE_ID": "1"
+  }
+}

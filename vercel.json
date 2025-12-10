@@ -1,12 +1,15 @@
 {
   "version": 3,
-  "buildCommand": "cd ai_trend_analyzer && python manage.py collectstatic --noinput",
+  "buildCommand": "pip install -r ai_trend_analyzer/requirements.txt && cd ai_trend_analyzer && python manage.py collectstatic --noinput",
   "outputDirectory": "ai_trend_analyzer/staticfiles",
   "builds": [
     {
       "src": "ai_trend_analyzer/viralbrain/wsgi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "50mb" }
+      "config": { 
+        "maxLambdaSize": "50mb",
+        "runtime": "python3.12"
+      }
     }
   ],
   "routes": [
